@@ -70,6 +70,11 @@ class slot{
     }
 }
 
+
+class timeTable {
+    private Vector<day> days = new Vector();
+}
+
 class day {
     private Vector<lesson> lessons = new Vector();
 }
