@@ -24,9 +24,13 @@ class course {
     public void addSlot(int duration, String dayPrefs, String timePrefs) {
         slots.add(new slot(duration, dayPrefs, timePrefs));
     }
-    
+
     public int getPriority() {
         return priority;
+    }
+
+    public String getName() {
+        return name;
     }
 }
 
