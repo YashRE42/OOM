@@ -70,6 +70,10 @@ class slot{
     }
 }
 
+class day {
+    private Vector<lesson> lessons = new Vector();
+}
+
 class lesson {
     course course;
     int timeSlot;
