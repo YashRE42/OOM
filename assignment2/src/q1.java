@@ -14,4 +14,8 @@ class slot{
         this.dayPrefs=dayPrefs;
         this.timePrefs=timePrefs;
     }
+
+    public int getDuration() {
+        return duration;
+    }
 }
