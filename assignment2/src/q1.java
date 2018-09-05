@@ -36,6 +36,14 @@ class course {
     public slot dequeue(){
         return slots.remove();
     }
+
+    public boolean isEmpty(){
+        if(slots.peek()==null){
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 
 
