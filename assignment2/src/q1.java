@@ -46,6 +46,14 @@ class course {
     }
 }
 
+class sortByPriority implements Comparator<course>
+{
+    // Used for sorting in ascending order of priority
+    public int compare(course a, course b)
+    {
+        return a.getPriority() - b.getPriority();
+    }
+}
 
 class slot{
     private int duration;
