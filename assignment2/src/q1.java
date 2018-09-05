@@ -4,6 +4,15 @@ import java.util.*;
 public class q1 {
 }
 
+class course {
+    private String code;
+    private String name;
+    private String instructor;
+    private int priority;
+    private int numberOfSlots;
+
+    }
+
 
 class slot{
     private int duration;
