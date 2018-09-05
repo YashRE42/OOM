@@ -20,6 +20,10 @@ class course {
         this.priority=priority;
         this.numberOfSlots=numberOfSlots;
     }
+    
+    public void addSlot(int duration, String dayPrefs, String timePrefs) {
+        slots.add(new slot(duration, dayPrefs, timePrefs));
+    }
 }
 
 
