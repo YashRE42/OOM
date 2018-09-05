@@ -11,7 +11,8 @@ class course {
     private int priority;
     private int numberOfSlots;
 
-    }
+    private Queue<slot> slots = new LinkedList();
+}
 
 
 class slot{
