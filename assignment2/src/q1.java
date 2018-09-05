@@ -12,6 +12,14 @@ class course {
     private int numberOfSlots;
 
     private Queue<slot> slots = new LinkedList();
+
+    public course(String code,String name,String instructor,int priority, int numberOfSlots ){
+        this.code=code;
+        this.name=name;
+        this.instructor=instructor;
+        this.priority=priority;
+        this.numberOfSlots=numberOfSlots;
+    }
 }
 
 
