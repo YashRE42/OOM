@@ -69,3 +69,9 @@ class slot{
         return duration;
     }
 }
+
+class lesson {
+    course course;
+    int timeSlot;
+    // 1= 9-10, 2= 10-11, 3= 11:15-12:15, 4= 12:15-1:15, 5= 3-4, 6= 4-5, and 7= 5-6.
+}
