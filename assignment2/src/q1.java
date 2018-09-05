@@ -32,6 +32,10 @@ class course {
     public String getName() {
         return name;
     }
+
+    public slot dequeue(){
+        return slots.remove();
+    }
 }
 
 
