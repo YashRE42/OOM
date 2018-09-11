@@ -7,4 +7,9 @@ public class q1 {
 class question {
     String question;
     Integer ID;
+    
+    public question(String question, Integer ID) {
+        this.question = question;
+        this.ID = ID;
+    }
 }
