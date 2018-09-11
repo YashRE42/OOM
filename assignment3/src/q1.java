@@ -5,6 +5,16 @@ public class q1 {
         Scanner Scan = new Scanner(System.in);
         int t = Scan.nextInt();
         for(int i=0;i<t;i++){
+            int q= Scan.nextInt(), n= Scan.nextInt(), k= Scan.nextInt();
+            for(int j=0;j<q;j++){
+                //input questions
+            }
+            for(int j=0;j<n;j++){
+                //input students
+            }
+            for(int j=0;j<n;j++){
+                //input order of entrance into exam room
+            }
         }
     }
 }
