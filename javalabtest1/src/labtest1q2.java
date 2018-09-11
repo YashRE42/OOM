@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class labtest1q1 {
+public class labtest1q2 {
     public static void main(String[] args) {
         int t;
         Scanner Scan = new Scanner(System.in);
@@ -13,7 +13,24 @@ public class labtest1q1 {
                 Effervesence.addEvent(Scan.next(),Scan.next(),Scan.next(),Scan.nextInt(),Scan.next(),Scan.nextInt());
             }
             Effervesence.order();
+            int s;
+            s=Scan.nextInt();
+            students students = new students();
+            for(int j=0;j<s;j++){
+                students.addStudent(Scan.next(), Scan.next(), Scan.next(), Scan.next());
+            }
+            int r;
+            r=Scan.nextInt();
+            for(int j=0;j<r;j++) {
+                Effervesence.register(Scan.next(), Scan.next(), students);
+            }
+            int q;
             System.out.print(Effervesence);
+            q=Scan.nextInt();
+            for(int j=0;j<q;j++){
+//                System.out.print(students.get(students.indexOfStudent(Scan.next())).toStri);
+                System.out.print(students.get(students.indexOfStudent(Scan.next())).query());
+            }
         }
     }
 }
@@ -24,6 +41,10 @@ class Effervesence{
 
     void addEvent(String ID, String name, String description, Integer day, String timeOfStart, Integer duration){
         this.events.add(new event(ID, name, description, day, timeOfStart, duration));
+    }
+
+    void insertEvent(event event){
+        this.events.add(event);
     }
 
     void order(){
@@ -49,6 +70,17 @@ class Effervesence{
 
         for(int i=0;i<days.size();i++) {
             result += "Day " + days.get(i).getDay() +"\n" + days.get(i);
+            if(i!=days.size()-1)
+                result+="\n";
+        }
+        return result;
+    }
+
+    public String stringify(){
+        String result="";
+
+        for(int i=0;i<days.size();i++) {
+            result += "Day " + days.get(i).getDay() +"\n" + days.get(i).stringify();
         }
         return result;
     }
@@ -56,6 +88,20 @@ class Effervesence{
     Integer indexOfDay(Integer day){
         for(int i=0;i<days.size();i++){
             if(days.get(i).getDay()==day){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    void register(String rollNumber, String eventID, students students){
+        events.get(indexOfEvent(eventID)).register(students.get(students.indexOfStudent(rollNumber)));
+        students.get(students.indexOfStudent(rollNumber)).register(events.get(indexOfEvent(eventID)));
+    }
+
+    int indexOfEvent(String eventID){
+        for(int i=0;i<events.size();i++){
+            if(events.get(i).getID().compareTo(eventID)==0){
                 return i;
             }
         }
@@ -86,6 +132,16 @@ class day{
         String result="";
         for(int i=0;i<events.size();i++){
             result+=events.get(i);
+            if(i!=events.size()-1)
+                    result+="\n";
+        }
+        return result;
+    }
+
+    public String stringify() {
+        String result="";
+        for(int i=0;i<events.size();i++){
+            result+=events.get(i).stringify();
         }
         return result;
     }
@@ -106,6 +162,7 @@ class event {
     private Integer day;
     private String timeOfStart;
     private Integer duration;
+    private students participants;
 
     event(String ID, String name, String description, Integer day, String timeOfStart, Integer duration){
         this.ID = ID;
@@ -114,10 +171,19 @@ class event {
         this.day = day;
         this.timeOfStart = timeOfStart;
         this.duration = duration;
+        this.participants= new students();
+    }
+
+    void register(student student){
+            participants.insertStudent(student);
     }
 
     @Override
     public String toString() {
+        return timeOfStart+"("+duration+") "+ID+" "+name+" "+description+"\n"+participants;
+    }
+
+    public String stringify() {
         return timeOfStart+"("+duration+") "+ID+" "+name+" "+description+"\n";
     }
 
@@ -134,16 +200,15 @@ class event {
     }
 }
 
-class sortDaysByDay implements Comparator<day>
-{
+class sortDaysByDay implements Comparator<day> {
     // Used for sorting in ascending order of day
     public int compare(day a, day b)
     {
         return a.getDay() - b.getDay();
     }
 }
-class sortEventsByTime implements Comparator<event>
-{
+
+class sortEventsByTime implements Comparator<event> {
     // Used for sorting in ascending order of time
     public int compare(event a, event b)
     {
@@ -151,5 +216,97 @@ class sortEventsByTime implements Comparator<event>
             return a.getID().compareTo(b.getID());
         }
         return a.getTimeOfStart().compareTo(b.getTimeOfStart());
+    }
+
+}
+
+class students{
+    private Vector<student> students;
+
+    student get(int i){
+        return students.get(i);
+    }
+
+    int indexOfStudent (String rollNumber){
+        for(int i=0;i<students.size();i++){
+            if(students.get(i).getRollNumber().compareTo(rollNumber)==0){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    students(){
+        students=new Vector<>();
+    }
+
+    void insertStudent(student student){
+        students.add(student);
+    }
+
+    void addStudent(String rollNumber, String name, String levelOfStudy, String course){
+        students.add(new student(rollNumber, name, levelOfStudy, course));
+    }
+
+    @Override
+    public String toString() {
+        String result="";
+        for(int i=0;i<students.size();i++){
+            result+=students.get(i).getRollNumber()+" "+students.get(i).getName()+" "+students.get(i).getLevelOfStudy()+" "+students.get(i).getCourse();
+            if(i!=students.size()-1){
+                result+="\n";
+            }
+        }
+        return result;
+    }
+}
+
+class student{
+    private String rollNumber; 
+    private String name;
+    private String levelOfStudy; 
+    private String course;
+    private Vector<event> events;
+
+    student(String rollNumber, String name, String levelOfStudy, String course){
+        this.rollNumber = rollNumber;
+        this.name = name;
+        this.levelOfStudy = levelOfStudy;
+        this.course = course;
+        this.events = new Vector<>();
+    }
+
+    public String getRollNumber() {
+        return rollNumber;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCourse() {
+        return course;
+    }
+
+    public String getLevelOfStudy() {
+        return levelOfStudy;
+    }
+
+    void register(event event){
+        this.events.add(event);
+    }
+
+    @Override
+    public String toString() {
+        return this.getRollNumber()+" "+this.getName()+" "+this.getLevelOfStudy()+" "+this.getCourse();
+    }
+
+    String query(){
+        Effervesence schedule = new Effervesence();
+        for(int j=0;j<events.size();j++){
+            schedule.insertEvent(events.get(j));
+        }
+        schedule.order();
+        return schedule.stringify();
     }
 }
