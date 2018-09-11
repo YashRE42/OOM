@@ -1,16 +1,29 @@
 import java.util.*;
 
-public class q1 {
+public class q2 {
     public static void main(String[] args) {
         Scanner s = new Scanner(System.in);
         int testCases=s.nextInt();
         for(int i=0;i<testCases;i++){
-            Vector<course> courses = new Vector();
+            int numberOfBatches=s.nextInt();
+            Vector<String> batches = new Vector();
+            for(int j=0;j<numberOfBatches;j++){
+                batches.add(s.next());
+            }
+
+            int numberOfFaculty=s.nextInt();
+            Vector<String> faculty = new Vector();
+            for(int j=0;j<numberOfFaculty;j++){
+                faculty.add(s.next());
+            }
+
             int numberOfCourses=s.nextInt();
+            Vector<course> courses = new Vector();
+
             for(int j=0; j<numberOfCourses; j++){
                 int numberOfSlots;
                 String a;
-                courses.add(new course(a=s.next(), s.next(), s.next(), s.nextInt(), numberOfSlots= s.nextInt()));
+                courses.add(new course(a=s.next(), s.next(), s.next(), s.nextInt(), s.next(), numberOfSlots= s.nextInt()));
                 for(int k=0;k<numberOfSlots;k++){
 //                    if(a.compareTo("not44")==0){
 //                        System.out.print("not44 slot sent");
@@ -28,15 +41,16 @@ public class q1 {
 //                    }
 //                }
 //            }
-            timeTable timeTable = new timeTable();
-            timeTable.createTimetable(courses);
-            System.out.print(timeTable);
+            timeTables timeTables = new timeTables(batches,faculty);
+            timeTables.createTimetables(courses);
+            System.out.print(timeTables);
 //            System.out.println("done");
         }
     }
 }
 
 class course {
+    private  String batch;
     private String code;
     private String name;
     private String instructor;
@@ -45,16 +59,21 @@ class course {
 
     private Queue<slot> slots = new LinkedList();
 
-    public course(String code,String name,String instructor,int priority, int numberOfSlots ){
+    public course(String code,String name,String instructor,int priority,String batch, int numberOfSlots ){
         this.code=code;
         this.name=name;
         this.instructor=instructor;
         this.priority=priority;
         this.numberOfSlots=numberOfSlots;
+        this.batch=batch;
     }
 
     public void addSlot(int duration, String dayPrefs, String timePrefs) {
         slots.add(new slot(duration, dayPrefs, timePrefs));
+    }
+
+    public String getBatch() {
+        return batch;
     }
 
     public int getPriority() {
@@ -185,40 +204,59 @@ class slot{
     }
 }
 
+class timeTables{
+    private Vector<timeTable> timeTables = new Vector();
+    private Vector<timeTable> facultyTimeTables = new Vector();
 
-
-/*
-
-this is where the buisnes logic processing will happen.
-order of assigning slots:
-
-prefered time>prefered day> low load > day order
-
-
-
-
-
-
-
-
-
-
-*/
-
-class timeTable {
-    private Vector<day> days = new Vector();
-    private Vector<lesson> saturday = new Vector();
-    private int saturdayCount;
-
-    timeTable() {
-        for (int i = 0; i < 5; i++) {
-            days.add(new day(i));
+    timeTables(Vector<String> batches,Vector<String> faculty){
+        for(int i=0;i<batches.size();i++){
+            timeTables.add(new timeTable(batches.get(i)));
         }
-        //saturday
-        saturdayCount=0;
+        for(int i=0;i<faculty.size();i++){
+            facultyTimeTables.add(new timeTable(faculty.get(i)));
+        }
     }
 
-    public void createTimetable(Vector<course> courses) {
+    public String toString() {
+        String result="";
+        for(int i=0;i<timeTables.size();i++){
+            result+= timeTables.get(i).getID()+"\n";
+            result+= timeTables.get(i).toString();
+        }
+//        for(int i=0;i<facultyTimeTables.size();i++){
+//            result+= facultyTimeTables.get(i).getID()+"\n";
+//            result+= facultyTimeTables.get(i).toString();
+//        }
+        return result;
+
+    }
+    class loadCompare implements Comparator<day>{
+
+        @Override
+        public int compare(day day1, day day2) {
+            return day1.getLoad().compareTo(day2.getLoad());
+        }
+    }
+
+    int indexOfBatch(String searchParam){
+        for(int i=0;i<timeTables.size();i++){
+            if(searchParam.compareTo(timeTables.get(i).getID())==0){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    int indexOfFaculty(String searchParam){
+        for(int i=0;i<facultyTimeTables.size();i++){
+            if(searchParam.compareTo(facultyTimeTables.get(i).getID())==0){
+                return i;
+            }
+        }
+        return -1;
+    }
+    //*//
+    public void createTimetables(Vector<course> courses) {
         boolean allSlotsAssigned = false;
         while(!allSlotsAssigned) {
             allSlotsAssigned=true;
@@ -233,15 +271,7 @@ class timeTable {
             }
         }
     }
-
-    public int getSaturdayCount() {
-        return saturdayCount;
-    }
-
-    public void raiseSaturdayCount(){
-        saturdayCount++;
-    }
-
+    //*//
     public void AssignSlotChoiseDayChoiceTime(slot current, course course) {
 //        if(course.getCode().compareTo("not44")==0){
 //            System.out.print("____\nget not44\n____\n");
@@ -256,10 +286,11 @@ class timeTable {
             for (int j = 1; j < timePrefs.size() && !assigned; j++) {
                 if (dayPrefs.get(0) != 0)
                     for (int i = 1; i < dayPrefs.size() && !assigned; i++) {
-                        if (isSlotAvailable(dayPrefs.get(i), timePrefs.get(j), duration)) {
-                            takeSlot(dayPrefs.get(i), timePrefs.get(j), course, duration);
+                        if (isSlotAvailable(dayPrefs.get(i), timePrefs.get(j), duration, course)) {
+                            timeTables.get(indexOfBatch(course.getBatch())).takeSlot(dayPrefs.get(i), timePrefs.get(j), course, duration);
+                            facultyTimeTables.get(indexOfFaculty(course.getInstructor())).takeSlot(dayPrefs.get(i), timePrefs.get(j), course, duration);
                             assigned = true;
-                            // -System.out.println("day :" + dayPrefs.get(i) + " time:" + timePrefs.get(j) + " slot available for " + course.getName() +" for "+duration);
+                        //    System.out.println("timetable:"+indexOfBatch(course.getBatch())+" day :" + dayPrefs.get(i) + " time:" + timePrefs.get(j) + " slot available for " + course.getName() +" for "+duration);
                         }
                     }
                 if (!assigned) {
@@ -267,7 +298,8 @@ class timeTable {
                     //assign by load
 //                    System.out.println("printing load");
                     for (int i = 0; i < 5; i++) {
-                        sortedDays.add(days.get(i));
+                        sortedDays.add(timeTables.get(indexOfBatch(course.getBatch())).getDays().get(i));
+                        //timeTables.get(indexOfBatch(course.getBatch())).
 //                        System.out.println(i + " " + sortedDays.get(i).getLoad());
                     }
                     int i = 0;
@@ -283,10 +315,11 @@ class timeTable {
 //                        System.out.println("lowest load is: " + lowestLoad);
 //                    selectedDays.forEach(day -> System.out.println(day.getID()));
                         for (i = 0; i < selectedDays.size() && !assigned; i++) {
-                            if (isSlotAvailable(selectedDays.get(i).getID(), timePrefs.get(j), duration)) {
-                                takeSlot(selectedDays.get(i).getID(), timePrefs.get(j), course, duration);
+                            if (isSlotAvailable(selectedDays.get(i).getID(), timePrefs.get(j), duration, course)) {
+                                timeTables.get(indexOfBatch(course.getBatch())).takeSlot(selectedDays.get(i).getID(), timePrefs.get(j), course, duration);
+                                facultyTimeTables.get(indexOfFaculty(course.getInstructor())).takeSlot(selectedDays.get(i).getID(), timePrefs.get(j), course, duration);
                                 assigned = true;
-//                                -System.out.println("day :" + selectedDays.get(i).getID() + " time:" + timePrefs.get(j) + " slot available for " + course.getName() + " for " + duration + " assigned by load with time pref");
+                            //    System.out.println("timetable:"+indexOfBatch(course.getBatch())+" day :" + selectedDays.get(i).getID() + " time:" + timePrefs.get(j) + " slot available for " + course.getName() + " for " + duration + " assigned by load with time pref");
                             }
 //                    System.out.println("trying day: "+selectedDays.get(i).getID()+" time: "+ timePrefs.get(j)+ " for: "+ course.getName());
                         }
@@ -298,10 +331,11 @@ class timeTable {
                 if(!assigned){
                     //sort by day
                     for(int i=0;i<5 && !assigned;i++){
-                        if (isSlotAvailable(i, timePrefs.get(j), duration)) {
-                            takeSlot(i, timePrefs.get(j), course, duration);
+                        if (isSlotAvailable(i, timePrefs.get(j), duration, course)) {
+                            timeTables.get(indexOfBatch(course.getBatch())).takeSlot(i, timePrefs.get(j), course, duration);
+                            facultyTimeTables.get(indexOfFaculty(course.getInstructor())).takeSlot(i, timePrefs.get(j), course, duration);
                             assigned = true;
-                            // -System.out.println("day :" +i + " time:" + timePrefs.get(j) + " slot available for " + course.getName() +" for "+duration);
+                        //    System.out.println("timetable:"+indexOfBatch(course.getBatch())+" day :" +i + " time:" + timePrefs.get(j) + " slot available for " + course.getName() +" for "+duration);
                         }
 //                    System.out.println("trying day: "+i+" time: "+ timePrefs.get(j)+ " for: "+ course.getName());
                     }
@@ -310,10 +344,11 @@ class timeTable {
         if(!assigned && dayPrefs.get(0)!=0)//at this point, no slots with given time pref are available
             for (int i = 1; i < dayPrefs.size() && !assigned; i++) {
                 for (int j = 0; j < 7 && !assigned; j++) {
-                    if (isSlotAvailable(dayPrefs.get(i), j, duration)) {
-                        takeSlot(dayPrefs.get(i), j, course, duration);
+                    if (isSlotAvailable(dayPrefs.get(i), j, duration, course)) {
+                        timeTables.get(indexOfBatch(course.getBatch())).takeSlot(dayPrefs.get(i), j, course, duration);
+                        facultyTimeTables.get(indexOfFaculty(course.getInstructor())).takeSlot(dayPrefs.get(i), j, course, duration);
                         assigned = true;
-                        // -System.out.println("day :" + dayPrefs.get(i) + " time:" + j + " slot available for " + course.getName() +" for "+duration);
+                    //    System.out.println("timetable:"+indexOfBatch(course.getBatch())+" day :" + dayPrefs.get(i) + " time:" + j + " slot available for " + course.getName() +" for "+duration);
                     }
                 }
             }
@@ -322,37 +357,41 @@ class timeTable {
             selectedDays = new ArrayList<day>();
             //all times on low load day
             for(int i=0; i < 5; i++){
-                if(days.get(i)!=null)
-                    sortedDays.add(days.get(i));
+//                System.out.print(course.getBatch());
+                if(indexOfBatch(course.getBatch())!=-1 && timeTables.get(indexOfBatch(course.getBatch())).getDays().get(i)!=null)
+                    sortedDays.add(timeTables.get(indexOfBatch(course.getBatch())).getDays().get(i));
             }
             int i=0;
             sortedDays.sort(new loadCompare());
-            int lowestLoad = sortedDays.get(i).getLoad();
-            for(i=0; i<5;i++) {
-                if(sortedDays.get(i).getLoad()==lowestLoad){
-                    selectedDays.add(sortedDays.get(i));
-                }
-            }
-//                    selectedDays.forEach(day -> System.out.println(day.getID()));
-            for(i=0;i<selectedDays.size() && !assigned;i++) {
-                for (int j = 0; j < 7 && !assigned; j++) {
-                    if (isSlotAvailable(selectedDays.get(i).getID(), j, duration)) {
-                        takeSlot(selectedDays.get(i).getID(), j, course, duration);
-                        assigned = true;
-                        // -System.out.println("day :" + selectedDays.get(i).getID() + " time:" + j + " slot available for " + course.getName() +" for "+duration+" assigned by load with no pref");
+            for (int l = 0; l < 5; l++) {
+                int lowestLoad = sortedDays.get(l).getLoad();
+                for (i = 0; i < 5; i++) {
+                    if (sortedDays.get(i).getLoad() == lowestLoad) {
+                        selectedDays.add(sortedDays.get(i));
                     }
-//                    System.out.println("trying day: "+selectedDays.get(i).getID()+" time: "+ timePrefs.get(j)+ " for: "+ course.getName());
+                }
+//                    selectedDays.forEach(day -> System.out.println(day.getID()));
+                for (i = 0; i < selectedDays.size() && !assigned; i++) {
+                    for (int j = 0; j < 7 && !assigned; j++) {
+                        if (isSlotAvailable(selectedDays.get(i).getID(), j, duration, course)) {
+                            timeTables.get(indexOfBatch(course.getBatch())).takeSlot(selectedDays.get(i).getID(), j, course, duration);
+                            facultyTimeTables.get(indexOfFaculty(course.getInstructor())).takeSlot(selectedDays.get(i).getID(), j, course, duration);
+                            assigned = true;
+//                            System.out.println("timetable:" + indexOfBatch(course.getBatch()) + " day :" + selectedDays.get(i).getID() + " time:" + j + " slot available for " + course.getName() + " for " + duration + " assigned by load with no pref");
+                        }
+//                        System.out.println("trying day: " + selectedDays.get(i).getID() + " time: " + j + " for: " + course.getName());
+                    }
                 }
             }
-
         }
         if(!assigned){
             for(int i=0; i<5 && !assigned; i++) {
                 for (int j = 0; j < 7 && !assigned; j++) {
-                    if (isSlotAvailable(i, j, duration)) {
-                        takeSlot(i, j, course, duration);
+                    if (isSlotAvailable(i, j, duration, course)) {
+                        timeTables.get(indexOfBatch(course.getBatch())).takeSlot(i, j, course, duration);
+                        facultyTimeTables.get(indexOfFaculty(course.getInstructor())).takeSlot(i, j, course, duration);
                         assigned = true;
-                        // -System.out.println("day :" + i + " time:" + j + " slot available for " + course.getName() +" for "+duration);
+                        System.out.println("timetable:"+indexOfBatch(course.getBatch())+" day :" + i + " time:" + j + " slot available for " + course.getName() +" for "+duration);
                     }
 //                    System.out.println("trying day: "+selectedDays.get(i).getID()+" time: "+ timePrefs.get(j)+ " for: "+ course.getName());
                 }
@@ -360,19 +399,68 @@ class timeTable {
         }
         if(!assigned){
             //saturday
-            pushSlot(course);
+            timeTables.get(indexOfBatch(course.getBatch())).pushSlot(course);
+            facultyTimeTables.get(indexOfFaculty(course.getInstructor())).pushSlot(course);
             assigned=true;
-            // -System.out.println("saturday assigned for " + course.getName());
+//            System.out.println("saturday assigned for " + course.getName());
         }
+//        System.out.println(timeTables);
 //        System.out.println("Is this an infinite loop?");
     }
+    //*//
+    public boolean isSlotAvailable(Integer day,Integer time,Integer duration, course course){
+        boolean result=true;
+        boolean hasBreak=false;
+        if(
+                time <= 1 && (time + duration - 1) > 1
+                        ||
+                        time <= 3 && (time + duration - 1) > 3
+                                ||
+                                time <= 6 && (time + duration - 1) > 6
 
-    class loadCompare implements Comparator<day>{
-
-        @Override
-        public int compare(day day1, day day2) {
-            return day1.getLoad().compareTo(day2.getLoad());
+        )
+            hasBreak=true;
+        for(int i=0;i<duration && result;i++) {
+//            System.out.println(time +" "+ duration);
+            boolean isClassTaken = timeTables.get(indexOfBatch(course.getBatch())).getDays().get(day).getLesson(time+i).isAssigned();
+            boolean isFacultyTaken = facultyTimeTables.get(indexOfFaculty(course.getInstructor())).getDays().get(day).getLesson(time+i).isAssigned();
+//            boolean isFacultyTaken = false;
+            result = result && !isFacultyTaken && !isClassTaken && !hasBreak;
         }
+        return result;
+    }
+}
+
+class timeTable {
+    private Vector<day> days = new Vector();
+    private Vector<lesson> saturday = new Vector();
+    private int saturdayCount;
+    private String ID;
+    timeTable(String ID) {
+        for (int i = 0; i < 5; i++) {
+            days.add(new day(i));
+        }
+        //saturday
+        saturdayCount=0;
+        this.ID=ID;
+//        for(int i=0;i<5;i++)
+//        System.out.print(getDays().get(i)+" ");
+    }
+
+    public Vector<day> getDays() {
+        return days;
+    }
+
+    public String getID() {
+        return ID;
+    }
+
+    public int getSaturdayCount() {
+        return saturdayCount;
+    }
+
+    public void raiseSaturdayCount(){
+        saturdayCount++;
     }
 
 //    public void assignSlot(slot current){
@@ -397,24 +485,6 @@ class timeTable {
 //            System.out.println("first not assigned");
 //        }
 //    }
-
-    public boolean isSlotAvailable(Integer day,Integer time,Integer duration){
-        boolean result=true;
-        boolean hasBreak=false;
-        if(
-                time <= 1 && (time + duration - 1) > 1
-                        ||
-                        time <= 3 && (time + duration - 1) > 3
-                        ||
-                        time <= 6 && (time + duration - 1) > 6
-
-        )
-            hasBreak=true;
-        for(int i=0;i<duration;i++) {
-            result = result && !days.get(day).getLesson(time+i).isAssigned() && !hasBreak;
-        }
-        return result;
-    }
 
     public void takeSlot(Integer day,Integer time, course course,Integer duration){
         for(int i=0;i<duration;i++){
@@ -472,6 +542,10 @@ class timeTable {
                         if ( duration > 2 && j<4 ){
                             duration = 2;
                         }//prevents overlap from 9:00 to 11:00 into 12:15 onwards and similarly for 11:15 to 1:15 into 3:00 onwards
+
+                        if(duration>2 && days.get(i).getLesson(j).getDuration()==2){
+                            duration=2;
+                        }
                         course course = days.get(i).getLesson(j).getCourse();
                         String courseDetails = course.getCode() + " " + course.getName() + " " + course.getInstructor();
                         result += timeDeAbstraction(j, true) + "-" + timeDeAbstraction(j + duration - 1, false) + " " + courseDetails + "\n";
