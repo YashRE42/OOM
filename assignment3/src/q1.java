@@ -3,7 +3,9 @@ import java.util.Scanner;
 public class q1 {
     public static void main(String[] args) {
         Scanner Scan = new Scanner(System.in);
-        
+        int t = Scan.nextInt();
+        for(int i=0;i<t;i++){
+        }
     }
 }
 
