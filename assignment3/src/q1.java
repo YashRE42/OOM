@@ -17,4 +17,9 @@ class question {
 class student {
     String rollNumber;
     String name;
+
+    public student(String rollNumber, String name) {
+        this.rollNumber = rollNumber;
+        this.name = name;
+    }
 }
