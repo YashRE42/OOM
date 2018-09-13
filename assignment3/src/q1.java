@@ -44,4 +44,8 @@ class student {
     public String getRollNumber() {
         return rollNumber;
     }
+
+    public int getRollNumberAsInteger(){
+        return Integer.parseInt(rollNumber,3, rollNumber.length(),10);
+    }
 }
