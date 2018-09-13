@@ -40,4 +40,8 @@ class student {
         this.rollNumber = rollNumber;
         this.name = name;
     }
+
+    public String getRollNumber() {
+        return rollNumber;
+    }
 }
