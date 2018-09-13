@@ -58,10 +58,3 @@ class SortByRoll implements Comparator<student>{
      return  a.getRollNumberAsInteger()-b.getRollNumberAsInteger();
     }
 }
-
-class assign{
-    private int minimumAffinity;
-    void byAffinity(Vector<student> students,Vector<question> questions){
-        
-    }
-}
