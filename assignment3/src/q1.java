@@ -49,3 +49,9 @@ class student {
         return Integer.parseInt(rollNumber,3, rollNumber.length(),10);
     }
 }
+
+class SortByRoll implements Comparator<student>{
+    int compare(student a, student b){
+     return  a.getRollNumber()-b.getRollNumber();
+    }
+}
