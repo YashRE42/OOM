@@ -24,8 +24,8 @@ public class q1 {
 }
 
 class question {
-    String question;
-    Integer ID;
+    private String question;
+    private Integer ID;
 
     public question(String question, Integer ID) {
         this.question = question;
@@ -34,8 +34,8 @@ class question {
 }
 
 class student {
-    String rollNumber;
-    String name;
+    private String rollNumber;
+    private String name;
 
     public student(String rollNumber, String name) {
         this.rollNumber = rollNumber;
