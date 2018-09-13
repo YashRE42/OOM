@@ -52,7 +52,7 @@ class student {
 }
 
 class SortByRoll implements Comparator<student>{
-    int compare(student a, student b){
+    public int compare(student a, student b){
      return  a.getRollNumber()-b.getRollNumber();
     }
 }
