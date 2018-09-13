@@ -36,6 +36,7 @@ class question {
 class student {
     private String rollNumber;
     private String name;
+    private Vector<question> questions = new Vector<question>();
 
     public student(String rollNumber, String name) {
         this.rollNumber = rollNumber;
