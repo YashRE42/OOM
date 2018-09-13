@@ -10,8 +10,9 @@ public class q1 {
             for(int j=0;j<q;j++){
                 questions.add(new question(Scan.next(), Scan.nextInt()));
             }
+            Vector<student> students = new Vector<>();
             for(int j=0;j<n;j++){
-                //input students
+                students.add(new student(Scan.next(), Scan.next()));
             }
             for(int j=0;j<n;j++){
                 //input order of entrance into exam room
