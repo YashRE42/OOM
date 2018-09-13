@@ -16,6 +16,7 @@ public class q1 {
             for(int j=0;j<n;j++){
                 students.add(new student(Scan.next(), Scan.next()));
             }
+            students.sort( new SortByRoll());
             for(int j=0;j<n;j++){
                 //input order of entrance into exam room
             }
