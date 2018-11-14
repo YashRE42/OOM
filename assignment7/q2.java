@@ -11,6 +11,7 @@
 public class q2 {
     //create interface and pass data to it
     public static void main(String[] args) {
+        students students = new students();
         System.out.print("hello world!");
     }
 }
