@@ -1,11 +1,10 @@
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Scanner;
-import java.util.Vector;
+import java.util.*;
 
 public class q1 {
+    //code for driver program of q1
     public static void main(String[] args) {
         Integer n;
+
         Scanner s = new Scanner(System.in);
         n = s.nextInt();
         students students = new students();
